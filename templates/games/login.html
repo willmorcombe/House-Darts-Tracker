@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <!-- Container to center the form -->
+        <div
+            class="container d-flex flex-column justify-content-center align-items-center"
+            style="height: 100vh"
+        >
+            <!-- Heading Text Above the Card -->
+            <h1
+                class="text-center mb-4"
+                style="
+                    font-family: 'Arial', sans-serif;
+                    font-weight: bold;
+                    color: #007bff;
+                "
+            >
+                18C Darts
+            </h1>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <!-- Login Form Card -->
+                <div class="card shadow-lg">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Login</h3>
+                        <form method="POST" action="#">
+                            {% csrf_token %}
+
+                            <!-- Password field -->
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    required
+                                />
+                            </div>
+
+                            <!-- Submit button -->
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-block"
+                            >
+                                Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider row"></div>
+
+        {% if messages %} {% for message in messages %}
+
+        <div class="alert alert-danger" role="alert">{{message}}</div>
+        {% endfor %} {% endif %}
+
+        <!-- Bootstrap JS and dependencies -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>

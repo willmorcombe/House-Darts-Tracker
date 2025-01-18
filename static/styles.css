@@ -1,0 +1,35 @@
+body,
+html {
+    height: 100%; /* Full height for the body and HTML to enable footer to stick at the bottom */
+}
+
+.content-wrapper {
+    min-height: 100%; /* Ensure the content wrapper takes up at least the full height of the viewport */
+    padding-bottom: 50px; /* Add space for the footer */
+}
+
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f8f9fa;
+    text-align: center;
+    margin-top: auto; /* Ensures the footer stays at the bottom */
+}
+
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar-brand {
+    color: white !important;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffeb3b !important;
+}
