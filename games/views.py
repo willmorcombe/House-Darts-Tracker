@@ -5,8 +5,10 @@ from .decorators import login_required
 
 import json
 # Create your views here.
-
-
+"""
+Auth views
+#? can maybe put this in an auth app, but its too simple and didn't seem necessary
+"""
 
 def login(request):
     if request.method == 'POST':
@@ -23,6 +25,21 @@ def login(request):
 def logout(request):
     request.session['username'] = None
     return redirect('/login')
+
+"""
+Main app views
+"""
+
 @login_required
 def home(request):
     return render(request, 'games/home.html')
+
+def play_game(request):
+    game_setup = True
+
+    if request.method == 'GET':
+        return render(request, 'games/play_game.html', context={'game_setup': game_setup})
+    
+    elif request.method == 'POST':
+        game_setup = False
+        return render(request, 'games/play_game.html', context={'game_setup': game_setup})
