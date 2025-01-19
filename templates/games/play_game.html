@@ -1,0 +1,227 @@
+{% extends 'layout.html' %} {% block title %}Darts Counter - Home{% endblock %}
+{% block content %} {% if game_setup %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Darts Game Setup</h2>
+
+    <!-- Form for selecting players, game type, and best of -->
+    <form action="{% url 'play_game' %}" method="POST">
+        {% csrf_token %}
+
+        <!-- Player Selection Section -->
+        <div class="mb-4">
+            <h4>Select Players</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Player 1 -->
+                    <div class="form-group">
+                        <label for="player1" class="form-label">Player 1</label>
+                        <select
+                            id="player1"
+                            name="player1"
+                            class="form-control"
+                            required
+                        >
+                            <option value="" disabled selected>
+                                Select Player 1
+                            </option>
+                            <!-- Example player options; these would typically come from a Django context or database -->
+                            <option value="player1_id">Player 1 Name</option>
+                            <option value="player2_id">Player 2 Name</option>
+                            <option value="player3_id">Player 3 Name</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Player 2 -->
+                    <div class="form-group">
+                        <label for="player2" class="form-label">Player 2</label>
+                        <select
+                            id="player2"
+                            name="player2"
+                            class="form-control"
+                            required
+                        >
+                            <option value="" disabled selected>
+                                Select Player 2
+                            </option>
+                            <!-- Example player options; these would typically come from a Django context or database -->
+                            <option value="player1_id">Player 1 Name</option>
+                            <option value="player2_id">Player 2 Name</option>
+                            <option value="player3_id">Player 3 Name</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Type Selection Section -->
+        <div class="mb-4">
+            <h4>Select Game Type</h4>
+            <div class="form-group">
+                <label for="game_type" class="form-label">Game Type</label>
+                <select
+                    id="game_type"
+                    name="game_type"
+                    class="form-control"
+                    required
+                >
+                    <option value="" disabled selected>Select Game Type</option>
+                    <option value="501">501</option>
+                    <option value="301">301</option>
+                    <option value="Cricket">Cricket</option>
+                    <option value="Around the World">Around the World</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Best Of Section -->
+        <div class="mb-4">
+            <h4>Best Of</h4>
+            <div class="form-group">
+                <label for="best_of" class="form-label">Best Of</label>
+                <select
+                    id="best_of"
+                    name="best_of"
+                    class="form-control"
+                    required
+                >
+                    <option value="" disabled selected>Select Best Of</option>
+                    <option value="1">Best of 1</option>
+                    <option value="3">Best of 3</option>
+                    <option value="5">Best of 5</option>
+                    <option value="7">Best of 7</option>
+                    <option value="9">Best of 9</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-lg">
+                Start Game
+            </button>
+        </div>
+    </form>
+</div>
+{% else %}
+<!-- Game in Progress Page -->
+<!-- Game in Progress Page -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Darts Game in Progress</h2>
+
+    <!-- Game Status Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Game Status</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Game Type:</strong> {{ game.game_type }}</p>
+            <p>
+                <strong>Turn:</strong> {{ current_turn }} - {{
+                current_player.name }}'s turn
+            </p>
+            <p><strong>Remaining Score:</strong> {{ remaining_score }}</p>
+        </div>
+    </div>
+
+    <!-- Score Input Section: Split into two columns -->
+    <div class="row">
+        <!-- Player 1 Side -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Player 1: {{ player1.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Score:</strong> {{ player1_score }}</p>
+                    <form action="" method="POST" id="scoreForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="player1_score" class="form-label"
+                                >Enter Player 1 Score</label
+                            >
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="player1_score"
+                                name="player1_score"
+                                value="{{ player1_score }}"
+                                {%
+                                if
+                                not
+                                is_player1_turn
+                                %}
+                                disabled
+                                {%
+                                endif
+                                %}
+                                required
+                            />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player 2 Side -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Player 2: {{ player2.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Score:</strong> {{ player2_score }}</p>
+                    <form action="" method="POST" id="scoreForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="player2_score" class="form-label"
+                                >Enter Player 2 Score</label
+                            >
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="player2_score"
+                                name="player2_score"
+                                value="{{ player2_score }}"
+                                {%
+                                if
+                                not
+                                is_player2_turn
+                                %}
+                                disabled
+                                {%
+                                endif
+                                %}
+                                required
+                            />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Stats Card -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Game Stats</h5>
+        </div>
+        <div class="card-body">
+            <h6>Current Turn: {{ current_turn }}</h6>
+            <p>
+                <strong>Player 1:</strong> {{ player1.name }} - Score: {{
+                player1_score }}
+            </p>
+            <p>
+                <strong>Player 2:</strong> {{ player2.name }} - Score: {{
+                player2_score }}
+            </p>
+            <p><strong>Remaining Score:</strong> {{ remaining_score }}</p>
+            <p>
+                <strong>Game Status:</strong> {% if game.status == "Ongoing" %}
+                Ongoing {% else %} Finished {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %} {% endblock %}
