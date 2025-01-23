@@ -29,6 +29,8 @@ class Game(models.Model):
     id = models.BigAutoField(primary_key=True)
     game_date = models.DateTimeField(auto_now_add=True)
     game_type = models.CharField(max_length=20)
+    best_of_legs = models.IntegerField()
+    best_of_sets = models.IntegerField()
     players = models.ManyToManyField(Player, related_name='games')
     completed = models.BooleanField(default=False)
     winner = models.ForeignKey(Player, null=True, blank=True, on_delete=models.SET_NULL, related_name='won_games')  # The winner of the game (can be null if the game isn't finished yet)

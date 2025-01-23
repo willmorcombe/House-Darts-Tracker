@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib import messages
-from .decorators import login_required
+from django.urls import reverse
 
+from .decorators import login_required
+from .api_calls import get_all_players, get_player, add_player, add_game
+from .models import Player
+import requests
 import json
 # Create your views here.
 """
@@ -27,19 +31,60 @@ def logout(request):
     return redirect('/login')
 
 """
-Main app views
+Main app template views
 """
 
 @login_required
 def home(request):
     return render(request, 'games/home.html')
 
+@login_required
 def play_game(request):
     game_setup = True
 
     if request.method == 'GET':
-        return render(request, 'games/play_game.html', context={'game_setup': game_setup})
+        players = get_all_players(base_url= request.build_absolute_uri('/'), cookies = request.COOKIES)
+        return render(request, 'games/play_game.html', context={'game_setup': game_setup, 'players' : players})
     
     elif request.method == 'POST':
         game_setup = False
-        return render(request, 'games/play_game.html', context={'game_setup': game_setup})
+
+        add_game_response = add_game(base_url=request.build_absolute_uri('/'), data=request.POST, cookies=request.COOKIES)
+      
+        if add_game_response.status_code == 201:
+
+            game_data = add_game_response.json()
+            game_data['player_one'] = get_player(
+                base_url=request.build_absolute_uri('/'),
+                cookies=request.COOKIES,
+                pk = game_data['players'][0]
+            )
+            game_data['player_two'] = get_player(
+                base_url=request.build_absolute_uri('/'),
+                cookies=request.COOKIES,
+                pk = game_data['players'][1]
+            )
+            return render(request, 'games/play_game.html', context={'game_setup': game_setup, 'game_data' :game_data})
+        
+        else:
+            response_text = add_game_response.json()
+            messages.error(request, response_text)
+            return redirect('/play_game')
+    
+@login_required
+def player_dashboard(request):
+    if request.method == 'GET':
+        # get request from a function 
+        players = get_all_players(base_url= request.build_absolute_uri('/'), cookies = request.COOKIES)
+
+        return render(request, 'games/player_dashboard.html', {'players' : players})
+    
+    if request.method == 'POST': # add player
+        response = add_player(base_url = request.build_absolute_uri('/'), cookies=request.COOKIES, data=request.POST)
+    
+        if response.status_code == 201:
+            return redirect('/player_dashboard')
+        elif response.status_code == 400:
+            response_text = response.json()['name'][0]
+            messages.error(request, response_text)
+            return redirect('/player_dashboard')
