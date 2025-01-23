@@ -1,0 +1,130 @@
+<!-- prettier-ignore -->
+{% extends 'layout.html' %} {% block title %}Darts Counter - Player Dashboard {%endblock %} 
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Players List Section -->
+        <div class="col-md-8 mx-auto">
+            <h3 class="text-center mb-4">Players</h3>
+
+            <!-- Add Player Form -->
+            <form action="{% url 'player_dashboard' %}" method="POST">
+                {% csrf_token %}
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Add New Player</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Add Player Input Fields -->
+                        <div id="add-player-form" class="row g-2">
+                            <div class="col-md-9">
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Enter player name"
+                                    required
+                                />
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button
+                                    type="submit"
+                                    class="btn btn-success w-100"
+                                >
+                                    Add Player
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Display messages (alert box) with Bootstrap padding -->
+                        {% if messages %}
+                        <div class="alert-container mt-3">
+                            {% for message in messages %}
+                            <div
+                                class="alert alert-danger px-3 py-2 mb-0"
+                                role="alert"
+                            >
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+
+            <!-- Players List -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Current Players</h5>
+                </div>
+                <div class="card-body">
+                    <ul id="players-list" class="list-group">
+                        {% for player in players %}
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                            data-player-id="{{ player.id }}"
+                            data-player-name="{{player.name}}"
+                        >
+                            <span>{{player.name}}</span>
+                            <div>
+                                <button
+                                    class="btn btn-info btn-sm me-2 explore-stats"
+                                >
+                                    Explore Stats
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm delete-player"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Event listener for delete button click
+
+        $("#players-list").on("click", ".delete-player", function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            // Get the player ID from the parent list item
+            var playerId = $(this).closest("li").data("player-id").toString();
+            var playerName = $(this).closest("li").data("player-name");
+
+            // Confirm deletion with the user
+            if (confirm(`Are you sure you want to delete ${playerName}?`)) {
+                // Send DELETE request using AJAX
+                $.ajax({
+                    url: "{% url 'api/delete_player' pk=1%}".replace(
+                        "1",
+                        playerId
+                    ), // Backend URL for deleting the player
+                    type: "DELETE",
+                    headers: {
+                        "X-CSRFToken": $(
+                            'input[name="csrfmiddlewaretoken"]'
+                        ).val(), // CSRF token
+                    },
+                    success: function (response) {
+                        // On success, remove the player's row from the list
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error deleting player: " + error);
+                    },
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

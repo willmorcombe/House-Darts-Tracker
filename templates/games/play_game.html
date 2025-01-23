@@ -1,10 +1,11 @@
-{% extends 'layout.html' %} {% block title %}Darts Counter - Home{% endblock %}
+<!-- prettier-ignore -->
+{% extends 'layout.html' %} {% block title %}Darts Counter - Play Game {%endblock %} 
 {% block content %} {% if game_setup %}
 <div class="container mt-5">
     <h2 class="text-center mb-4">Darts Game Setup</h2>
 
     <!-- Form for selecting players, game type, and best of -->
-    <form action="{% url 'play_game' %}" method="POST">
+    <form id="game-setup-form" action="{% url 'play_game' %}" method="POST">
         {% csrf_token %}
 
         <!-- Player Selection Section -->
@@ -25,9 +26,11 @@
                                 Select Player 1
                             </option>
                             <!-- Example player options; these would typically come from a Django context or database -->
-                            <option value="player1_id">Player 1 Name</option>
-                            <option value="player2_id">Player 2 Name</option>
-                            <option value="player3_id">Player 3 Name</option>
+                            {% for player in players %}
+                            <option value="{{player.id}}">
+                                {{player.name}}
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -45,9 +48,14 @@
                                 Select Player 2
                             </option>
                             <!-- Example player options; these would typically come from a Django context or database -->
-                            <option value="player1_id">Player 1 Name</option>
-                            <option value="player2_id">Player 2 Name</option>
-                            <option value="player3_id">Player 3 Name</option>
+                            {% for player in players %}
+                            <option
+                                id="test_{{player.id}}"
+                                value="{{player.id}}"
+                            >
+                                {{player.name}}
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -68,20 +76,38 @@
                     <option value="" disabled selected>Select Game Type</option>
                     <option value="501">501</option>
                     <option value="301">301</option>
-                    <option value="Cricket">Cricket</option>
-                    <option value="Around the World">Around the World</option>
                 </select>
             </div>
         </div>
 
         <!-- Best Of Section -->
         <div class="mb-4">
-            <h4>Best Of</h4>
+            <h4>Legs</h4>
             <div class="form-group">
-                <label for="best_of" class="form-label">Best Of</label>
+                <label for="best_of_legs" class="form-label">Best Of</label>
                 <select
-                    id="best_of"
-                    name="best_of"
+                    id="best_of_legs"
+                    name="best_of_legs"
+                    class="form-control"
+                    required
+                >
+                    <option value="" disabled selected>Select Best Of</option>
+                    <option value="1">Best of 1</option>
+                    <option value="3">Best of 3</option>
+                    <option value="5">Best of 5</option>
+                    <option value="7">Best of 7</option>
+                    <option value="9">Best of 9</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h4>Sets</h4>
+            <div class="form-group">
+                <label for="best_of_legs" class="form-label">Best Of</label>
+                <select
+                    id="best_of_sets"
+                    name="best_of_sets"
                     class="form-control"
                     required
                 >
@@ -104,124 +130,368 @@
     </form>
 </div>
 {% else %}
-<!-- Game in Progress Page -->
-<!-- Game in Progress Page -->
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Darts Game in Progress</h2>
-
-    <!-- Game Status Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Game Status</h5>
-        </div>
-        <div class="card-body">
-            <p><strong>Game Type:</strong> {{ game.game_type }}</p>
-            <p>
-                <strong>Turn:</strong> {{ current_turn }} - {{
-                current_player.name }}'s turn
-            </p>
-            <p><strong>Remaining Score:</strong> {{ remaining_score }}</p>
-        </div>
-    </div>
-
-    <!-- Score Input Section: Split into two columns -->
-    <div class="row">
-        <!-- Player 1 Side -->
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Player 1: {{ player1.name }}</h5>
+<div class="h-100 w-100 d-inline-block">
+    <div class="row top-half">
+        <!-- Player 1 Section -->
+        <div
+            class="z-3 col-6 player bg-light p-3 text-center"
+            style="background-color: green"
+        >
+            <!-- Player 1 Leg & Set Score -->
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <strong>Leg Score:</strong>
+                    <span id="player-one-leg-score">0</span>
                 </div>
-                <div class="card-body">
-                    <p><strong>Score:</strong> {{ player1_score }}</p>
-                    <form action="" method="POST" id="scoreForm">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="player1_score" class="form-label"
-                                >Enter Player 1 Score</label
-                            >
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="player1_score"
-                                name="player1_score"
-                                value="{{ player1_score }}"
-                                {%
-                                if
-                                not
-                                is_player1_turn
-                                %}
-                                disabled
-                                {%
-                                endif
-                                %}
-                                required
-                            />
-                        </div>
-                    </form>
+                <div>
+                    <strong>Set Score:</strong>
+                    <span id="player-one-set-score">0</span>
                 </div>
+            </div>
+
+            <!-- Player 1 Name -->
+            <h4
+                class="player-one-colour"
+                id="player-one"
+                data-player-id="{{game_data.player_one.id}}"
+            >
+                <strong>{{game_data.player_one.name}}</strong>
+            </h4>
+
+            <!-- Player 1 Main Score -->
+            <h2
+                class="display-2 player-one-colour"
+                id="player1-score"
+                data-initial-start-score="{{game_data.game_type}}"
+            >
+                {{game_data.game_type}}
+            </h2>
+
+            <!-- Player 1 Stats -->
+            <div class="stats mt-4">
+                <hr />
+                <p>
+                    <strong>3-Dart Avg:</strong> <span id="player1-avg">0</span>
+                </p>
+                <p>
+                    <strong>Last Score:</strong>
+                    <span id="player1-last">0</span>
+                </p>
+                <p>
+                    <strong>Darts Thrown:</strong>
+                    <span id="player1-darts">0</span>
+                </p>
             </div>
         </div>
 
-        <!-- Player 2 Side -->
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Player 2: {{ player2.name }}</h5>
+        <!-- Player 2 Section -->
+        <div class="col-6 player bg-light p-3 text-center">
+            <!-- Player 2 Leg & Set Score -->
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <strong>Leg Score:</strong>
+                    <span id="player-two-leg-score">0</span>
                 </div>
-                <div class="card-body">
-                    <p><strong>Score:</strong> {{ player2_score }}</p>
-                    <form action="" method="POST" id="scoreForm">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="player2_score" class="form-label"
-                                >Enter Player 2 Score</label
-                            >
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="player2_score"
-                                name="player2_score"
-                                value="{{ player2_score }}"
-                                {%
-                                if
-                                not
-                                is_player2_turn
-                                %}
-                                disabled
-                                {%
-                                endif
-                                %}
-                                required
-                            />
-                        </div>
-                    </form>
+                <div>
+                    <strong>Set Score:</strong>
+                    <span id="player-two-set-score">0</span>
                 </div>
             </div>
+
+            <!-- Player 2 Name -->
+            <h4
+                class="player-two-colour"
+                id="player-two"
+                data-player-id="{{game_data.player_two.id}}"
+            >
+                <strong>{{game_data.player_two.name}}</strong>
+            </h4>
+
+            <!-- Player 2 Main Score -->
+            <h2
+                class="display-2 player-two-colour"
+                id="player2-score"
+                data-initial-start-score="{{game_data.game_type}}"
+            >
+                {{game_data.game_type}}
+            </h2>
+
+            <!-- Player 2 Stats -->
+            <div class="stats mt-4">
+                <hr />
+                <p>
+                    <strong>3-Dart Avg:</strong> <span id="player2-avg">0</span>
+                </p>
+                <p>
+                    <strong>Last Score:</strong>
+                    <span id="player2-last">0</span>
+                </p>
+                <p>
+                    <strong>Darts Thrown:</strong>
+                    <span id="player2-darts">0</span>
+                </p>
+            </div>
         </div>
+
+        <hr />
     </div>
 
-    <!-- Game Stats Card -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5>Game Stats</h5>
-        </div>
-        <div class="card-body">
-            <h6>Current Turn: {{ current_turn }}</h6>
-            <p>
-                <strong>Player 1:</strong> {{ player1.name }} - Score: {{
-                player1_score }}
-            </p>
-            <p>
-                <strong>Player 2:</strong> {{ player2.name }} - Score: {{
-                player2_score }}
-            </p>
-            <p><strong>Remaining Score:</strong> {{ remaining_score }}</p>
-            <p>
-                <strong>Game Status:</strong> {% if game.status == "Ongoing" %}
-                Ongoing {% else %} Finished {% endif %}
-            </p>
-        </div>
+    <!-- data attributes -->
+    <div
+        id="game-data"
+        data-best-of-legs="{{ game_data.best_of_legs }}"
+        data-best-of-sets="{{ game_data.best_of_sets }}"
+        data-game-type="{{ game_data.game_type }}"
+        data-player-one-name="{{ game_data.player_one.name }}"
+        data-player-two-name="{{ game_data.player_two.name}}"
+    ></div>
+    <div class="fixed-bottom numpad-container px-4">
+        <input
+            id="entered-score"
+            class="form-control form-control py-3 input"
+            style="font-size: 1rem; padding: 8px"
+            placeholder="Enter Score"
+            disabled
+        />
+        <div class="simple-keyboard"></div>
     </div>
 </div>
-{% endif %} {% endblock %}
+{% endif %}
+
+<script type="text/javascript">
+    // init setup
+    let player_one_go = true;
+
+    let current_leg = 1;
+    let current_set = 1;
+    let game_count = 1;
+    let best_of_sets = $("#game-data").data("best-of-sets");
+    let best_of_legs = $("#game-data").data("best-of-legs");
+    let game_type = $("#game-data").data("game-type");
+    let player_one_name = $("#game-data").data("player-one-name");
+    let player_two_name = $("#game-data").data("player-two-name");
+
+    // this is just a list of scores, player one starts
+    let player_one_id = $("#player-one").data("player-id");
+    let player_two_id = $("#player-two").data("player-id");
+
+    let game_score = {
+        player_one_legs: 0,
+        player_two_legs: 0,
+        player_one_sets: 0,
+        player_two_sets: 0,
+        [game_count]: {
+            [player_one_id]: [parseInt($("#player1-score").text())],
+            [player_two_id]: [parseInt($("#player2-score").text())],
+        },
+    };
+
+    let game_stats = {
+        avg: 0,
+        last_score: 0,
+        darts_thrown: 0,
+    };
+
+    console.log(game_score);
+    if (player_one_go) {
+        $(".player-one-colour").css("color", "green");
+        $(".player-two-colour").css("color", "black");
+    } else {
+        $(".player-two-colour").css("color", "green");
+        $(".player-one-colour").css("color", "black");
+    }
+
+    $(document).ready(function () {
+        const Keyboard = window.SimpleKeyboard.default;
+
+        const myKeyboard = new Keyboard({
+            onChange: (input) => onChange(input),
+            onKeyPress: (button) => onKeyPress(button),
+            layout: {
+                default: ["1 2 3", "4 5 6", "7 8 9", "&lt 0 {bksp}", "{enter}"],
+            },
+            theme: "hg-theme-default hg-layout-numeric numeric-theme",
+            onInit: function () {
+                adjustKeyboardSize();
+            },
+        });
+
+        // Adjust keyboard size based on screen width
+        function adjustKeyboardSize() {
+            // Check if the screen is mobile or tablet-sized
+            if ($(window).width() <= 768) {
+                $(".simple-keyboard").css("font-size", "1rem"); // Adjust for mobile
+            } else if ($(window).width() <= 576) {
+                $(".simple-keyboard").css("font-size", "0.9rem"); // Further reduce size for small screens
+            } else {
+                $(".simple-keyboard").css("font-size", "1.2rem"); // Default size for larger screens
+            }
+        }
+
+        function onChange(input) {
+            if (input !== "&lt") {
+                document.querySelector(".input").value = input;
+            } else {
+                myKeyboard.setInput("");
+            }
+
+            // console.log("Input changed", input);
+        }
+
+        // Listen for form submission
+        $("#game-setup-form").submit(function (event) {
+            var player1 = $("#player1").val(); // Get selected value for Player 1
+            var player2 = $("#player2").val(); // Get selected value for Player 2
+
+            // Check if Player 1 and Player 2 are the same
+            if (player1 && player2 && player1 === player2) {
+                // Prevent form submission
+                event.preventDefault();
+
+                // Show an error message
+                alert(
+                    "Player 1 and Player 2 cannot be the same. Please select different players."
+                );
+            }
+        });
+
+        // GAME Logic ===================================================
+
+        function onKeyPress(button) {
+            console.log("Button pressed", button);
+
+            // Check if the "Enter" button was pressed (case-sensitive, adjust if needed)
+            if (button === "{enter}") {
+                // Declare the variable here, outside of the if block
+
+                let current_player_score_ele;
+
+                // Select the score element based on the player's turn
+                if (player_one_go) {
+                    current_player_score = $("#player1-score").text();
+                    current_player_score_ele = $("#player1-score");
+                } else {
+                    current_player_score = $("#player2-score").text();
+                    current_player_score_ele = $("#player2-score");
+                }
+
+                // Get the entered score from the input box
+                let player_score = $("#entered-score").val();
+
+                // If player_score is a valid number and not empty, proceed
+                if (player_score !== "") {
+                    // Subtract the entered score from the current player score
+                    let new_score =
+                        parseInt(current_player_score) - parseInt(player_score);
+
+                    // Update the displayed score
+                    current_player_score_ele.text(new_score);
+
+                    // store the new score in the game history
+                    if (player_one_go) {
+                        game_score[game_count][player_one_id].push(new_score);
+                    } else {
+                        game_score[game_count][player_two_id].push(new_score);
+                    }
+
+                    console.log(game_score);
+                    // Clear the input box
+                    myKeyboard.clearInput();
+
+                    // check if player won
+                    if (new_score == 0) {
+                        start_new_game();
+                    }
+
+                    // Call function to handle the change of turns
+                    change_of_go();
+                } else {
+                    console.log("Invalid score entered");
+                }
+            } else if (button == "&lt") {
+                myKeyboard.clearInput();
+
+                // check to see if its the first go of the game
+                if (
+                    game_score[game_count][player_one_id].length > 1 ||
+                    game_score[game_count][player_two_id].length > 1
+                ) {
+                    // its not the first go so can go back one
+                    // if its player ones go, it means we should remove playe 2's last turn
+                    if (player_one_go) {
+                        game_score[game_count][player_two_id].pop();
+                        // get last element in array
+                        //update player 2's score
+                        $("#player2-score").text(
+                            game_score[game_count][player_two_id].at(-1)
+                        );
+                    } else {
+                        game_score[game_count][player_one_id].pop();
+                        // get last element in array
+                        //update player 2's score
+                        $("#player1-score").text(
+                            game_score[game_count][player_one_id].at(-1)
+                        );
+                    }
+                    console.log(game_score);
+                    // Call function to handle the change of turns
+                    change_of_go();
+                }
+            }
+        }
+
+        function start_new_game() {
+            // update game score depending on winner
+            let player_var = player_one_go ? "one" : "two";
+            game_score["player_" + player_var + "_legs"] += 1;
+
+            // reset scores
+            $("#player1-score").text(parseInt(game_type));
+            $("#player2-score").text(parseInt(game_type));
+
+            // if leg score of player is equal to best of leg / 2 + 0.5
+            if (
+                parseInt(game_score["player_" + player_var + "_legs"]) ==
+                parseInt(best_of_legs) / 2 + 0.5
+            ) {
+                game_score["player_one_legs"] = 0;
+                game_score["player_two_legs"] = 0;
+                // add one to sets
+                game_score["player_" + player_var + "_sets"] += 1;
+            }
+            if (
+                // if set score of player is equal to best of set / 2 + 0.5
+                parseInt(game_score["player_" + player_var + "_sets"]) ==
+                parseInt(best_of_sets) / 2 + 0.5
+            ) {
+                // write ajax post request to save game data
+                alert(player_one_name + " won the game! congrats poggo");
+            }
+
+            // add to html too
+            $("#player-one-leg-score").text(game_score["player_one_legs"]);
+            $("#player-two-leg-score").text(game_score["player_two_legs"]);
+            $("#player-one-set-score").text(game_score["player_one_sets"]);
+            $("#player-two-set-score").text(game_score["player_two_sets"]);
+
+            // increment game count and add new game to game score
+            game_count += 1;
+            game_score[game_count] = {
+                [player_one_id]: [parseInt(game_type)],
+                [player_two_id]: [parseInt(game_type)],
+            };
+        }
+
+        function change_of_go() {
+            player_one_go = !player_one_go;
+            if (player_one_go) {
+                $(".player-one-colour").css("color", "green");
+                $(".player-two-colour").css("color", "black");
+            } else {
+                $(".player-two-colour").css("color", "green");
+                $(".player-one-colour").css("color", "black");
+            }
+        }
+    });
+</script>
+{% endblock %}

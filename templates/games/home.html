@@ -1,4 +1,4 @@
-{% extends 'layout.html' %} {% block title %}Darts Counter - Home{% endblock %}
+{% extends 'layout.html' %} {% block title %}Darts Counter - Home {% endblock %}
 {% block content %}
 <div class="container mt-5">
     <div class="row">
@@ -24,12 +24,16 @@
         <div class="col-12 col-md-6 mb-4">
             <div class="card shadow" style="background-color: #f8f9fa">
                 <div class="card-body text-center">
-                    <h4 class="card-title">View Stats</h4>
+                    <h4 class="card-title">View Players</h4>
                     <p class="card-text">
-                        See how your games are going! Track wins, losses, and
-                        high scores.
+                        Player dashboard, add / delete players, view lifetime
+                        player stats and more!
                     </p>
-                    <a href="" class="btn btn-primary btn-block">View Stats</a>
+                    <a
+                        href="{% url 'player_dashboard' %}"
+                        class="btn btn-primary btn-block"
+                        >View Players</a
+                    >
                 </div>
             </div>
         </div>
