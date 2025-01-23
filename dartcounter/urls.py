@@ -24,5 +24,6 @@ urlpatterns = [
     
     # App Stats
     path('', include('games.urls')),
+    path('api/', include('api.urls')),
 
 ]

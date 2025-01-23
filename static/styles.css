@@ -33,3 +33,250 @@ html {
 .navbar-nav .nav-link:hover {
     color: #ffeb3b !important;
 }
+
+/* simple keyboard */
+.hg-theme-default {
+    background-color: #ececec;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue,
+        Helvetica, Arial, Lucida Grande, sans-serif;
+    overflow: hidden;
+    padding: 5px;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    width: 100%;
+}
+
+.hg-theme-default .hg-button span,
+.hg-theme-default .hg-button span svg {
+    pointer-events: none;
+}
+
+.hg-theme-default button.hg-button {
+    border-width: 0;
+    font-size: inherit;
+    outline: 0;
+}
+
+.hg-theme-default .hg-button {
+    display: inline-block;
+    flex-grow: 1;
+}
+
+/* Base size for desktop */
+.hg-theme-default .hg-button {
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #b5b5b5;
+    border-radius: 5px;
+    box-shadow: 0 0 3px -1px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    height: 50px; /* Larger height for desktop */
+    justify-content: center;
+    padding: 6px 10px; /* Default padding for desktop */
+    font-size: 1.2rem; /* Larger font size for desktop */
+}
+
+.hg-theme-default .hg-button.hg-standardBtn {
+    width: 20px;
+}
+
+.hg-theme-default .hg-button.hg-activeButton {
+    background: #efefef;
+}
+
+.hg-theme-default.hg-layout-numeric .hg-button {
+    align-items: center;
+    display: flex;
+    height: 60px; /* Larger height for numeric layout */
+    justify-content: center;
+    width: 33.3%;
+    font-size: 1.2rem; /* Larger font size for desktop */
+}
+
+.hg-theme-default .hg-button.hg-button-numpadadd,
+.hg-theme-default .hg-button.hg-button-numpadenter {
+    height: 85px; /* Larger height for special keys */
+}
+
+.hg-theme-default .hg-button.hg-button-numpad0 {
+    width: 105px; /* Larger width for special numpad button */
+}
+
+.hg-theme-default .hg-button.hg-button-com {
+    max-width: 85px; /* Larger max-width for special buttons */
+}
+
+.hg-theme-default .hg-button.hg-button-at {
+    max-width: 45px; /* Larger max-width for @ button */
+}
+
+.hg-theme-default .hg-button.hg-selectedButton {
+    background: rgba(5, 25, 70, 0.53);
+    color: #fff;
+}
+
+.hg-theme-default .hg-button.hg-standardBtn[data-skbtn=".com"] {
+    max-width: 82px;
+}
+
+.hg-theme-default .hg-button.hg-standardBtn[data-skbtn="@"] {
+    max-width: 60px;
+}
+
+/* Adjust row spacing for desktop */
+.hg-theme-default .hg-row {
+    display: flex;
+    margin-bottom: 5px; /* Larger margin between rows */
+}
+
+.hg-theme-default .hg-row:not(:last-child) {
+    margin-bottom: 5px; /* Adjusted margin */
+}
+
+.hg-theme-default .hg-row .hg-button-container,
+.hg-theme-default .hg-row .hg-button:not(:last-child) {
+    margin-right: 5px; /* Larger margin between buttons */
+}
+
+.hg-theme-default .hg-row > div:last-child {
+    margin-right: 0;
+}
+
+.hg-theme-default .hg-row .hg-button-container {
+    display: flex;
+}
+
+/* Candidate box (autocompletion) */
+.hg-candidate-box {
+    background: #ececec;
+    border-bottom: 2px solid #b5b5b5;
+    border-radius: 5px;
+    display: inline-flex;
+    margin-top: -10px;
+    position: absolute;
+    transform: translateY(-100%);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+ul.hg-candidate-box-list {
+    display: flex;
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li.hg-candidate-box-list-item {
+    align-items: center;
+    display: flex;
+    height: 40px; /* Larger height for candidate box */
+    justify-content: center;
+    width: 40px; /* Larger width for candidate box items */
+}
+
+li.hg-candidate-box-list-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+}
+
+li.hg-candidate-box-list-item:active {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.hg-candidate-box-prev:before {
+    content: "◄";
+}
+
+.hg-candidate-box-next:before {
+    content: "►";
+}
+
+.hg-candidate-box-next,
+.hg-candidate-box-prev {
+    align-items: center;
+    color: #969696;
+    cursor: pointer;
+    display: flex;
+    padding: 0 10px;
+}
+
+.hg-candidate-box-next {
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.hg-candidate-box-prev {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+.hg-candidate-box-btn-active {
+    color: #444;
+}
+
+/* Media query for mobile */
+@media (max-width: 768px) {
+    /* Further reduce the size for mobile devices */
+    .hg-theme-default .hg-button {
+        height: 25px; /* Much smaller height for mobile */
+        font-size: 0.9rem; /* Smaller font size for mobile */
+        padding: 3px 5px; /* Reduced padding for mobile */
+    }
+
+    .hg-theme-default.hg-layout-numeric .hg-button {
+        height: 35px; /* Smaller height for numeric layout on mobile */
+        font-size: 0.9rem; /* Smaller font size for mobile */
+    }
+
+    .hg-theme-default .hg-button.hg-button-numpadadd,
+    .hg-theme-default .hg-button.hg-button-numpadenter {
+        height: 50px; /* Smaller height for special keys on mobile */
+    }
+
+    .hg-theme-default .hg-button.hg-button-numpad0 {
+        width: 80px; /* Smaller width for special numpad button */
+    }
+
+    .hg-theme-default .hg-button.hg-button-com {
+        max-width: 60px; /* Smaller max-width for special buttons on mobile */
+    }
+
+    .hg-theme-default .hg-button.hg-button-at {
+        max-width: 35px; /* Smaller max-width for @ button on mobile */
+    }
+
+    .hg-theme-default .hg-row {
+        margin-bottom: 2px; /* Smaller margin between rows on mobile */
+    }
+
+    .hg-theme-default .hg-row .hg-button-container,
+    .hg-theme-default .hg-row .hg-button:not(:last-child) {
+        margin-right: 2px; /* Smaller margin between buttons on mobile */
+    }
+
+    .hg-candidate-box {
+        margin-top: -6px; /* Adjusted candidate box margin on mobile */
+    }
+
+    ul.hg-candidate-box-list {
+        padding: 0; /* Adjusted padding on mobile */
+    }
+
+    li.hg-candidate-box-list-item {
+        height: 25px; /* Much smaller height for candidate box items */
+        width: 25px; /* Much smaller width for candidate box items */
+    }
+
+    .hg-candidate-box-prev,
+    .hg-candidate-box-next {
+        padding: 0 4px; /* Smaller padding for previous/next buttons */
+    }
+}
