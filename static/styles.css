@@ -280,3 +280,9 @@ li.hg-candidate-box-list-item:active {
         padding: 0 4px; /* Smaller padding for previous/next buttons */
     }
 }
+
+/* misc */
+
+.hidden {
+    display: none;
+}

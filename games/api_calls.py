@@ -46,16 +46,17 @@ def add_player(base_url, cookies, data) -> Response:
 All game calls
 """
 
-def get_all_games(base_url, cookies) -> List[Game]:
+def get_all_games(base_url, cookies, completed=False) -> List[Game]:
     """
     A call to internal api to get all games
     """
     api_url = reverse('api/get_games')
 
-    game_response = requests.get(url=base_url + api_url, cookies=cookies) # need to send the cookies to authenticate the user
+    game_response = requests.get(url=base_url + api_url, cookies=cookies, params={'completed' : completed}) # need to send the cookies to authenticate the user
     if game_response.status_code == 200:
         games = game_response.json()
     else:
+        print(game_response.__dict__)
         games = []
     return games
 

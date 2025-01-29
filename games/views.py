@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.urls import reverse
 
 from .decorators import login_required
-from .api_calls import get_all_players, get_player, add_player, add_game
+from .api_calls import get_all_players, get_player, add_player, add_game, get_all_games
 from .models import Player
 import requests
 import json
@@ -50,10 +50,11 @@ def play_game(request):
         game_setup = False
 
         add_game_response = add_game(base_url=request.build_absolute_uri('/'), data=request.POST, cookies=request.COOKIES)
-      
+
         if add_game_response.status_code == 201:
 
             game_data = add_game_response.json()
+
             game_data['player_one'] = get_player(
                 base_url=request.build_absolute_uri('/'),
                 cookies=request.COOKIES,
@@ -68,6 +69,7 @@ def play_game(request):
         
         else:
             response_text = add_game_response.json()
+            print(response_text)
             messages.error(request, response_text)
             return redirect('/play_game')
     
@@ -85,6 +87,19 @@ def player_dashboard(request):
         if response.status_code == 201:
             return redirect('/player_dashboard')
         elif response.status_code == 400:
-            response_text = response.json()['name'][0]
+            response_text = response.json()
             messages.error(request, response_text)
             return redirect('/player_dashboard')
+        
+@login_required
+def previous_games(request):
+    if request.method == 'GET':
+
+        all_completed_games = get_all_games(base_url= request.build_absolute_uri('/'), cookies = request.COOKIES, completed=True)
+        print(all_completed_games)
+        return render(request, 'games/previous_games.html', context ={'game_history' : all_completed_games})
+    
+@login_required
+def game_stats(request, pk):
+    if request.method == 'GET':
+        return render(request, 'games/game_stats.html')
