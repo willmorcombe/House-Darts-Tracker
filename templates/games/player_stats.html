@@ -1,0 +1,178 @@
+<!-- prettier-ignore -->
+{% extends 'layout.html' %}
+{% block title %}Game Stats Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Game Stats Dashboard</h2>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <!-- Total Games Played -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Games Played</h5>
+                    <h2 class="text-primary">120</h2>
+                    <p class="card-text">Across all game types</p>
+                </div>
+            </div>
+        </div>
+        <!-- Win Percentage -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Win Percentage</h5>
+                    <h2 class="text-success">65%</h2>
+                    <p class="card-text">Based on completed games</p>
+                </div>
+            </div>
+        </div>
+        <!-- Average Score -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Average Score</h5>
+                    <h2 class="text-warning">87.5</h2>
+                    <p class="card-text">Per game</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-center">
+                        Performance Over Time
+                    </h5>
+                    <canvas
+                        id="performanceChart"
+                        width="400"
+                        height="200"
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Top Scoring Games</h5>
+                    <ul class="list-group">
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game 1
+                            <span class="badge bg-primary rounded-pill"
+                                >95</span
+                            >
+                        </li>
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game 2
+                            <span class="badge bg-primary rounded-pill"
+                                >90</span
+                            >
+                        </li>
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game 3
+                            <span class="badge bg-primary rounded-pill"
+                                >88</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Most Played Game Types</h5>
+                    <ul class="list-group">
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game Type A
+                            <span class="badge bg-success rounded-pill"
+                                >50</span
+                            >
+                        </li>
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game Type B
+                            <span class="badge bg-success rounded-pill"
+                                >40</span
+                            >
+                        </li>
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            Game Type C
+                            <span class="badge bg-success rounded-pill"
+                                >30</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js Graph Configuration
+    const ctx = document.getElementById("performanceChart").getContext("2d");
+    const performanceChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+                {
+                    label: "Average Score",
+                    data: [75, 80, 85, 90, 95, 100],
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    tension: 0.4,
+                    fill: true,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "top",
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Month",
+                    },
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "Score",
+                    },
+                    beginAtZero: true,
+                },
+            },
+        },
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+<!-- prettier-ignore -->
+{% extends 'layout.html' %} 
+{% block title %}Darts Counter - Player Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Previous Games</h2>
+
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Game Type</th>
+                    <th>Best of Legs</th>
+                    <th>Best of Sets</th>
+                    <th>Winner</th>
+                    <th>Date Played</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in game_history %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ game.game_type }}</td>
+                    <td>{{ game.best_of_legs }}</td>
+                    <td>{{ game.best_of_sets }}</td>
+                    <td>{{ game.winner }}</td>
+                    <td>{{ game.game_date }}</td>
+                    <td>
+                        <a
+                            href="{% url 'game_stats' game.id %}"
+                            class="btn btn-primary btn-sm"
+                            >Explore</a
+                        >
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No games found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile-Friendly Table View -->
+    <div class="d-md-none">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="h6">#</th>
+                        <th class="h6">Game</th>
+                        <th class="h6">Winner</th>
+                        <th class="h6">Date</th>
+                        <th class="h6">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in game_history %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ game.game_type }}</td>
+                        <td>{{ game.winner }}</td>
+                        <td>{{ game.game_date }}</td>
+                        <td>
+                            <a
+                                href="{% url 'game_stats' game.id %}"
+                                class="btn btn-primary btn-sm"
+                                >Explore</a
+                            >
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No games found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Small text decoration for mobile -->
+            <div class="small text-muted text-center mt-2">
+                <p>Swipe horizontally to see all details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

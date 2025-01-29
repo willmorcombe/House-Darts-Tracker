@@ -1,0 +1,193 @@
+<!-- prettier-ignore -->
+{% extends 'layout.html' %}
+{% block title %}Game Stats Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Game Statistics Dashboard</h2>
+
+    <!-- Highlights Section -->
+    <div class="row text-center mb-4">
+        <!-- Latest Game Winner -->
+        <div class="col-md-4">
+            <div class="card text-bg-primary shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Latest Game Winner</h5>
+                    <p class="card-text fs-3">John Doe</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Game -->
+        <div class="col-md-4">
+            <div class="card text-bg-success shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Best Game</h5>
+                    <p class="card-text">
+                        Highest 3-Dart Avg: <strong>120.5</strong><br />
+                        Player: <strong>Jane Smith</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leg and Set Scores -->
+        <div class="col-md-4">
+            <div class="card text-bg-info shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Latest Game Scores</h5>
+                    <p class="card-text">
+                        Legs: <strong>3-1</strong><br />
+                        Sets: <strong>2-0</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphs Section -->
+    <div class="row mb-4">
+        <!-- 3-Dart Averages Graph -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-center">3-Dart Averages</h5>
+                    <canvas id="threeDartAvgChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Rate Graph -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Checkout Rates</h5>
+                    <canvas id="checkoutRateChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Game Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Winner</th>
+                                    <th>3-Dart Avg (P1)</th>
+                                    <th>3-Dart Avg (P2)</th>
+                                    <th>Checkout %</th>
+                                    <th>Leg Score</th>
+                                    <th>Set Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>2025-01-01</td>
+                                    <td>John Doe</td>
+                                    <td>110.5</td>
+                                    <td>102.3</td>
+                                    <td>45%</td>
+                                    <td>3-2</td>
+                                    <td>2-1</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>2025-01-10</td>
+                                    <td>Jane Smith</td>
+                                    <td>120.5</td>
+                                    <td>98.1</td>
+                                    <td>52%</td>
+                                    <td>3-1</td>
+                                    <td>2-0</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>2025-01-15</td>
+                                    <td>Jane Smith</td>
+                                    <td>118.9</td>
+                                    <td>101.7</td>
+                                    <td>47%</td>
+                                    <td>3-0</td>
+                                    <td>3-1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Graphs -->
+<script>
+    // Sample data for 3-Dart Averages
+    const dartAvgCtx = document
+        .getElementById("threeDartAvgChart")
+        .getContext("2d");
+    new Chart(dartAvgCtx, {
+        type: "line",
+        data: {
+            labels: ["2025-01-01", "2025-01-10", "2025-01-15"],
+            datasets: [
+                {
+                    label: "Player 1 Avg",
+                    data: [110.5, 120.5, 118.9],
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 2,
+                },
+                {
+                    label: "Player 2 Avg",
+                    data: [102.3, 98.1, 101.7],
+                    borderColor: "rgba(153, 102, 255, 1)",
+                    borderWidth: 2,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                },
+            },
+        },
+    });
+
+    // Sample data for Checkout Rates
+    const checkoutCtx = document
+        .getElementById("checkoutRateChart")
+        .getContext("2d");
+    new Chart(checkoutCtx, {
+        type: "bar",
+        data: {
+            labels: ["John Doe", "Jane Smith", "Jane Smith"],
+            datasets: [
+                {
+                    label: "Checkout %",
+                    data: [45, 52, 47],
+                    backgroundColor: "rgba(255, 99, 132, 0.5)",
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                },
+            },
+        },
+    });
+</script>
+{% endblock %}

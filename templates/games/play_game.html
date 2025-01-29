@@ -28,7 +28,7 @@
                             <!-- Example player options; these would typically come from a Django context or database -->
                             {% for player in players %}
                             <option value="{{player.id}}">
-                                {{player.name}}
+                                {{player.full_name}}
                             </option>
                             {% endfor %}
                         </select>
@@ -53,7 +53,7 @@
                                 id="test_{{player.id}}"
                                 value="{{player.id}}"
                             >
-                                {{player.name}}
+                                {{player.full_name}}
                             </option>
                             {% endfor %}
                         </select>
@@ -155,7 +155,7 @@
                 id="player-one"
                 data-player-id="{{game_data.player_one.id}}"
             >
-                <strong>{{game_data.player_one.name}}</strong>
+                <strong>{{game_data.player_one.first_name}}</strong>
             </h4>
 
             <!-- Player 1 Main Score -->
@@ -167,19 +167,37 @@
                 {{game_data.game_type}}
             </h2>
 
+            <!-- checkout options -->
+            <div class="player1-checkout-options">
+                <button
+                    id="dart-one-checkout"
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-one hidden"
+                    disabled
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-two hidden"
+                    disabled
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-three hidden"
+                    disabled
+                ></button>
+            </div>
+
             <!-- Player 1 Stats -->
-            <div class="stats mt-4">
+            <div class="player1-stats mt-4">
                 <hr />
-                <p>
-                    <strong>3-Dart Avg:</strong> <span id="player1-avg">0</span>
-                </p>
+                <p><strong>3-Dart Avg:</strong> <span class="avg">0</span></p>
                 <p>
                     <strong>Last Score:</strong>
-                    <span id="player1-last">0</span>
+                    <span class="last-dart">0</span>
                 </p>
                 <p>
                     <strong>Darts Thrown:</strong>
-                    <span id="player1-darts">0</span>
+                    <span class="darts-thrown">0</span>
                 </p>
             </div>
         </div>
@@ -204,7 +222,7 @@
                 id="player-two"
                 data-player-id="{{game_data.player_two.id}}"
             >
-                <strong>{{game_data.player_two.name}}</strong>
+                <strong>{{game_data.player_two.first_name}}</strong>
             </h4>
 
             <!-- Player 2 Main Score -->
@@ -216,24 +234,94 @@
                 {{game_data.game_type}}
             </h2>
 
+            <!-- checkout options -->
+            <div class="player2-checkout-options">
+                <button
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-one hidden"
+                    disabled
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-two hidden"
+                    disabled
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning btn-sm fw-bold dart-three hidden"
+                    disabled
+                ></button>
+            </div>
+
             <!-- Player 2 Stats -->
-            <div class="stats mt-4">
+            <div class="player2-stats mt-4">
                 <hr />
-                <p>
-                    <strong>3-Dart Avg:</strong> <span id="player2-avg">0</span>
-                </p>
+                <p><strong>3-Dart Avg:</strong> <span class="avg">0</span></p>
                 <p>
                     <strong>Last Score:</strong>
-                    <span id="player2-last">0</span>
+                    <span class="last-dart">0</span>
                 </p>
                 <p>
                     <strong>Darts Thrown:</strong>
-                    <span id="player2-darts">0</span>
+                    <span class="darts-thrown">0</span>
                 </p>
             </div>
         </div>
 
         <hr />
+    </div>
+
+    <!-- Modal -->
+    <div
+        class="modal fade"
+        id="checkoutModal"
+        tabindex="-1"
+        aria-labelledby="checkoutModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">
+                        Darts Used on Checkout
+                    </h5>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-3">Please select the number of darts used:</p>
+                    <div class="d-grid gap-2">
+                        <!-- Buttons for selection -->
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-lg checkout-btn"
+                            data-darts="0"
+                        >
+                            0
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-lg checkout-btn"
+                            data-darts="1"
+                        >
+                            1
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-lg checkout-btn"
+                            data-darts="2"
+                        >
+                            2
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-lg checkout-btn"
+                            data-darts="3"
+                        >
+                            3
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- data attributes -->
@@ -242,8 +330,9 @@
         data-best-of-legs="{{ game_data.best_of_legs }}"
         data-best-of-sets="{{ game_data.best_of_sets }}"
         data-game-type="{{ game_data.game_type }}"
-        data-player-one-name="{{ game_data.player_one.name }}"
-        data-player-two-name="{{ game_data.player_two.name}}"
+        data-player-one-name="{{ game_data.player_one.first_name }}"
+        data-player-two-name="{{ game_data.player_two.first_name}}"
+        data-game-id="{{game_data.id}}"
     ></div>
     <div class="fixed-bottom numpad-container px-4">
         <input
@@ -268,6 +357,7 @@
     let best_of_sets = $("#game-data").data("best-of-sets");
     let best_of_legs = $("#game-data").data("best-of-legs");
     let game_type = $("#game-data").data("game-type");
+    let game_id = $("#game-data").data("game-id");
     let player_one_name = $("#game-data").data("player-one-name");
     let player_two_name = $("#game-data").data("player-two-name");
 
@@ -275,21 +365,43 @@
     let player_one_id = $("#player-one").data("player-id");
     let player_two_id = $("#player-two").data("player-id");
 
+    // stats setup
+    let game_stats = {
+        [player_one_id]: {
+            score_log: [],
+        },
+        [player_two_id]: {
+            score_log: [],
+        },
+    };
+
+    let game_stats_history = {
+        [player_one_id]: {
+            avg: [0],
+            last_dart: [0],
+            darts_thrown: [0],
+        },
+        [player_two_id]: {
+            avg: [0],
+            last_dart: [0],
+            darts_thrown: [0],
+        },
+    };
     let game_score = {
         player_one_legs: 0,
         player_two_legs: 0,
         player_one_sets: 0,
         player_two_sets: 0,
         [game_count]: {
-            [player_one_id]: [parseInt($("#player1-score").text())],
-            [player_two_id]: [parseInt($("#player2-score").text())],
+            [player_one_id]: {
+                raw_leg_score: [parseInt($("#player1-score").text())],
+                darts_used_on_checkout: 0,
+            },
+            [player_two_id]: {
+                raw_leg_score: [parseInt($("#player1-score").text())],
+                darts_used_on_checkout: 0,
+            },
         },
-    };
-
-    let game_stats = {
-        avg: 0,
-        last_score: 0,
-        darts_thrown: 0,
     };
 
     console.log(game_score);
@@ -357,13 +469,12 @@
 
         // GAME Logic ===================================================
 
-        function onKeyPress(button) {
+        async function onKeyPress(button) {
             console.log("Button pressed", button);
 
             // Check if the "Enter" button was pressed (case-sensitive, adjust if needed)
             if (button === "{enter}") {
                 // Declare the variable here, outside of the if block
-
                 let current_player_score_ele;
 
                 // Select the score element based on the player's turn
@@ -378,30 +489,44 @@
                 // Get the entered score from the input box
                 let player_score = $("#entered-score").val();
 
-                // If player_score is a valid number and not empty, proceed
-                if (player_score !== "") {
+                // If player_score is a valid
+                if (valid_score(player_score, current_player_score)) {
                     // Subtract the entered score from the current player score
                     let new_score =
                         parseInt(current_player_score) - parseInt(player_score);
+                    // display the checkout atempts modal
+                    await check_score_and_open_modal(new_score);
 
                     // Update the displayed score
                     current_player_score_ele.text(new_score);
 
                     // store the new score in the game history
                     if (player_one_go) {
-                        game_score[game_count][player_one_id].push(new_score);
+                        game_score[game_count][player_one_id][
+                            "raw_leg_score"
+                        ].push(new_score);
                     } else {
-                        game_score[game_count][player_two_id].push(new_score);
+                        game_score[game_count][player_two_id][
+                            "raw_leg_score"
+                        ].push(new_score);
                     }
 
                     console.log(game_score);
                     // Clear the input box
                     myKeyboard.clearInput();
 
+                    // display the checkouts
+                    if (new_score < 171 && new_score !== 0) {
+                        display_checkouts(new_score);
+                    }
+
                     // check if player won
                     if (new_score == 0) {
                         start_new_game();
                     }
+
+                    // update game stats
+                    update_game_stats(player_score);
 
                     // Call function to handle the change of turns
                     change_of_go();
@@ -413,36 +538,206 @@
 
                 // check to see if its the first go of the game
                 if (
-                    game_score[game_count][player_one_id].length > 1 ||
-                    game_score[game_count][player_two_id].length > 1
+                    game_score[game_count][player_one_id]["raw_leg_score"]
+                        .length > 1 ||
+                    game_score[game_count][player_two_id]["raw_leg_score"]
+                        .length > 1
                 ) {
                     // its not the first go so can go back one
                     // if its player ones go, it means we should remove playe 2's last turn
                     if (player_one_go) {
-                        game_score[game_count][player_two_id].pop();
+                        game_score[game_count][player_two_id][
+                            "raw_leg_score"
+                        ].pop();
                         // get last element in array
                         //update player 2's score
                         $("#player2-score").text(
-                            game_score[game_count][player_two_id].at(-1)
+                            game_score[game_count][player_two_id][
+                                "raw_leg_score"
+                            ].at(-1)
                         );
+                        // remove player 2's other stats
+                        Object.keys(game_stats_history[player_two_id]).forEach(
+                            (key) => {
+                                game_stats_history[player_two_id][key].pop(); // Pop the last element from each list
+                                $(".player2-stats")
+                                    .find("." + key.replace("_", "-"))
+                                    .text(
+                                        game_stats_history[player_two_id][
+                                            key
+                                        ].at(-1)
+                                    );
+                            }
+                        );
+                        game_stats[player_two_id]["score_log"].pop();
+                        // lastly, recalculate checkout scores
+                        if (
+                            game_stats[player_two_id]["score_log"].at(-1) < 170
+                        ) {
+                            display_checkouts(
+                                game_stats[player_two_id]["score_log"].at(-1)
+                            );
+                        } else {
+                            remove_checkouts();
+                        }
                     } else {
-                        game_score[game_count][player_one_id].pop();
+                        game_score[game_count][player_one_id][
+                            "raw_leg_score"
+                        ].pop();
                         // get last element in array
                         //update player 2's score
                         $("#player1-score").text(
-                            game_score[game_count][player_one_id].at(-1)
+                            game_score[game_count][player_one_id][
+                                "raw_leg_score"
+                            ].at(-1)
                         );
+                        // remove stats
+                        Object.keys(game_stats_history[player_one_id]).forEach(
+                            (key) => {
+                                game_stats_history[player_one_id][key].pop(); // Pop the last element from each list
+                                $(".player1-stats")
+                                    .find("." + key.replace("_", "-"))
+                                    .text(
+                                        game_stats_history[player_one_id][
+                                            key
+                                        ].at(-1)
+                                    );
+                            }
+                        );
+                        game_stats[player_one_id]["score_log"].pop();
+                        if (
+                            game_stats[player_one_id]["score_log"].at(-1) < 170
+                        ) {
+                            display_checkouts(
+                                game_stats[player_one_id]["score_log"].at(-1)
+                            );
+                        } else {
+                            remove_checkouts();
+                        }
                     }
+
+                    console.log(game_stats_history);
+
                     console.log(game_score);
+                    console.log(game_stats);
                     // Call function to handle the change of turns
                     change_of_go();
                 }
             }
         }
 
+        function display_checkouts(player_score) {
+            // display the checkout options for the player, use the api on the backend to get the checkout data
+
+            let checkout_div = player_one_go
+                ? $(".player1-checkout-options")
+                : $(".player2-checkout-options");
+
+            let get_checkout_url =
+                "{% url 'api/get_checkoutlist' score=1%}".replace(
+                    "1",
+                    player_score
+                );
+
+            // Send the request using the send_ajax_request function
+            send_ajax_request("GET", get_checkout_url, {})
+                .then(function (response) {
+                    // Process the response data
+                    if (response["dart_one"] !== "nan") {
+                        checkout_div.find(".dart-one").removeClass("hidden");
+                        checkout_div
+                            .find(".dart-one")
+                            .text(response["dart_one"]);
+                    } else {
+                        checkout_div.find(".dart-one").addClass("hidden");
+                    }
+
+                    if (response["dart_two"] !== "nan") {
+                        checkout_div.find(".dart-two").removeClass("hidden");
+                        checkout_div
+                            .find(".dart-two")
+                            .text(response["dart_two"]);
+                    } else {
+                        checkout_div.find(".dart-two").addClass("hidden");
+                    }
+
+                    if (response["dart_three"] !== "nan") {
+                        checkout_div.find(".dart-three").removeClass("hidden");
+                        checkout_div
+                            .find(".dart-three")
+                            .text(response["dart_three"]);
+                    } else {
+                        checkout_div.find(".dart-three").addClass("hidden");
+                    }
+                })
+                .catch(function (error) {
+                    // Handle any errors that occur during the request
+                    alert("Error fetching checkout data: " + error);
+                    console.log(error); // Log the error for debugging
+                });
+        }
+
+        function valid_score(player_score, current_player_score) {
+            // return false if score is not a darts score.
+            // used for score validation
+            player_score = parseInt(player_score);
+            current_player_score = parseInt(current_player_score);
+            console.log(typeof player_score, typeof current_player_score);
+            console.log(player_score, current_player_score);
+            if (isNaN(player_score)) {
+                return false;
+            }
+            if (player_score > 180) {
+                return false;
+            }
+            if (current_player_score - player_score < 0) {
+                return false;
+            }
+            return true;
+        }
+
+        function update_game_stats(player_score) {
+            // updating the game stats based off of every players turn
+            // init
+            player_score = parseInt(player_score);
+            player_id = player_one_go ? player_one_id : player_two_id;
+            player_stats_div = player_one_go
+                ? $(".player1-stats")
+                : $(".player2-stats");
+            // updating game stats
+            game_stats[player_id]["score_log"].push(player_score);
+            let average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
+
+            // maybe change if implement how many darts on checkout
+            // add to history
+            game_stats_history[player_id]["avg"].push(
+                average(game_stats[player_id]["score_log"]).toFixed(2)
+            );
+            game_stats_history[player_id]["last_dart"].push(player_score);
+            game_stats_history[player_id]["darts_thrown"].push(
+                game_stats_history[player_id]["darts_thrown"].at(-1) + 3
+            );
+
+            // update html
+            // prettier-ignore
+            player_stats_div
+                .find(".avg")
+                .text(game_stats_history[player_id]["avg"].at(-1));
+            player_stats_div
+                .find(".last-dart")
+                .text(game_stats_history[player_id]["last_dart"].at(-1));
+            player_stats_div
+                .find(".darts-thrown")
+                .text(game_stats_history[player_id]["darts_thrown"].at(-1));
+        }
+
         function start_new_game() {
+            remove_checkouts();
             // update game score depending on winner
             let player_var = player_one_go ? "one" : "two";
+            let winning_player_id = player_one_go
+                ? player_one_id
+                : player_two_id;
             game_score["player_" + player_var + "_legs"] += 1;
 
             // reset scores
@@ -465,7 +760,89 @@
                 parseInt(best_of_sets) / 2 + 0.5
             ) {
                 // write ajax post request to save game data
-                alert(player_one_name + " won the game! congrats poggo");
+                alert(
+                    player_one_go
+                        ? player_one_name + " won the game! congrats poggo"
+                        : player_two_name + " won the game! congrats poggo"
+                );
+                let patch_game_url = "{% url 'api/update_game' pk=1%}".replace(
+                    "1",
+                    game_id
+                );
+                let patch_game_data = {
+                    winner: winning_player_id,
+                    completed: true,
+                    raw_game_data: JSON.stringify(game_score),
+                };
+
+                send_ajax_request("PATCH", patch_game_url, patch_game_data)
+                    .then((response) => {
+                        // Send the data to leg post
+                        let leg_post_url = "{% url 'api/add_leg' %}";
+                        let requests = []; // Array to hold the requests (promises)
+                        // looping through legs
+
+                        for (let key in game_score) {
+                            if (!isNaN(key)) {
+                                let leg_data = {
+                                    raw_leg_data: JSON.stringify(
+                                        game_score[key]
+                                    ),
+                                    player1: player_one_id,
+                                    player2: player_two_id,
+                                    leg_number: key,
+                                    game_id: game_id,
+                                    winner: game_score[key][player_one_id][
+                                        "raw_leg_score"
+                                    ].includes(0)
+                                        ? player_one_id
+                                        : player_two_id,
+                                };
+                                requests.push(
+                                    send_ajax_request(
+                                        "POST",
+                                        leg_post_url,
+                                        leg_data
+                                    )
+                                ); // Return the second POST request's promise
+                            }
+                        }
+                        return Promise.all(requests);
+                    })
+                    .then((response) => {
+                        // Send the first POST request to game stats for player 1
+                        let post_url_1 = "{% url 'api/add_game_stats'%}";
+                        let post_data_1 = {
+                            player: player_one_id,
+                            game: game_id,
+                        };
+                        return send_ajax_request(
+                            "POST",
+                            post_url_1,
+                            post_data_1
+                        ); // Return the first POST request's promise
+                    })
+                    .then((response) => {
+                        // Send the second POST request
+                        let post_url_2 = "{% url 'api/add_game_stats'%}";
+                        let post_data_2 = {
+                            player: player_two_id,
+                            game: game_id,
+                        };
+                        return send_ajax_request(
+                            "POST",
+                            post_url_2,
+                            post_data_2
+                        ); // Return the second POST request's promise
+                    })
+                    .then((response) => {
+                        window.location.href = "{% url 'home' %}"; // Redirect to home after success
+                        // You can perform any additional actions here after the second POST request
+                    })
+                    .catch((error) => {
+                        console.error("Error in the requests:", error); // Handle any errors in the chain
+                    });
+                return;
             }
 
             // add to html too
@@ -476,10 +853,24 @@
 
             // increment game count and add new game to game score
             game_count += 1;
-            game_score[game_count] = {
-                [player_one_id]: [parseInt(game_type)],
-                [player_two_id]: [parseInt(game_type)],
-            };
+            (game_score[game_count] = {
+                [player_one_id]: {
+                    raw_leg_score: [parseInt(game_type)],
+                    darts_used_on_checkout: 0,
+                },
+                [player_two_id]: {
+                    raw_leg_score: [parseInt(game_type)],
+                    darts_used_on_checkout: 0,
+                },
+            }),
+                // if game_count is odd player one needs to start, if even player 2 starts
+                game_count % 2 == 0
+                    ? player_var == "two"
+                        ? change_of_go()
+                        : {}
+                    : player_var == "one"
+                    ? change_of_go()
+                    : {};
         }
 
         function change_of_go() {
@@ -491,6 +882,86 @@
                 $(".player-two-colour").css("color", "green");
                 $(".player-one-colour").css("color", "black");
             }
+        }
+
+        function remove_checkouts() {
+            console.log("doing the function");
+            // display hidden for all checkout buttons at beginning of each go
+            $(".player1-checkout-options").find(".dart-one").addClass("hidden");
+            $(".player1-checkout-options").find(".dart-two").addClass("hidden");
+            $(".player1-checkout-options")
+                .find(".dart-three")
+                .addClass("hidden");
+
+            $(".player2-checkout-options").find(".dart-one").addClass("hidden");
+            $(".player2-checkout-options").find(".dart-two").addClass("hidden");
+            $(".player2-checkout-options")
+                .find(".dart-three")
+                .addClass("hidden");
+        }
+
+        function send_ajax_request(method, url, data) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: data,
+                    headers: {
+                        "X-CSRFToken": $(
+                            'input[name="csrfmiddlewaretoken"]'
+                        ).val(), // CSRF token
+                    },
+                    success: function (response) {
+                        resolve(response); // Resolve the promise with the response
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error updating game: " + error);
+                        console.log(error, xhr, status);
+                        reject(error); // Reject the promise with the error
+                    },
+                });
+            });
+        }
+
+        function check_score_and_open_modal(new_score) {
+            return new Promise((resolve, reject) => {
+                const modalElement = $("#checkoutModal");
+                const modal = new bootstrap.Modal(modalElement[0], {
+                    backdrop: "static", // Prevent closing by clicking the backdrop
+                    keyboard: false, // Disable closing the modal with the keyboard (Escape key)
+                });
+
+                if (new_score < 50) {
+                    // Open the modal
+                    modal.show();
+
+                    // Ensure the event handler is added only once
+                    $(".checkout-btn")
+                        .off("click")
+                        .on("click", function () {
+                            const dartsUsed = $(this).data("darts"); // Get the data-darts attribute value
+                            console.log(dartsUsed);
+
+                            // Update the game score based on who is playing
+                            player_one_go
+                                ? (game_score[game_count][player_one_id][
+                                      "darts_used_on_checkout"
+                                  ] += 1)
+                                : (game_score[game_count][player_two_id][
+                                      "darts_used_on_checkout"
+                                  ] += 1);
+
+                            // Hide the modal
+                            modal.hide();
+
+                            // Resolve the promise after the modal is hidden
+                            resolve(dartsUsed);
+                        });
+                } else {
+                    // If the score is above 50, resolve the promise immediately
+                    resolve(null);
+                }
+            });
         }
     });
 </script>
